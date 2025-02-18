@@ -1,12 +1,40 @@
+"use client";
+
 import React from "react";
-import { CommandOutput, CommandHelp } from "../types";
+import { CommandOutput, CommandItem } from "../types";
 
 interface TerminalOutputProps {
-  output: CommandOutput[] | null;
+  output: CommandOutput[];
 }
 
-export const TerminalOutput: React.FC<TerminalOutputProps> = ({ output }) => {
-  if (!Array.isArray(output)) return null;
+const TerminalOutput: React.FC<TerminalOutputProps> = ({ output }) => {
+  const renderContent = (content: string | Array<string | CommandItem>) => {
+    if (Array.isArray(content)) {
+      return content.map((line, i) => {
+        if (typeof line === "object") {
+          return (
+            <div
+              key={i}
+              className="text-zinc-700 mb-2 hover:text-red-900 transition-colors duration-300"
+            >
+              <span className="text-red-900">{line.command}</span>
+              <span className="text-zinc-400 mx-2">―</span>
+              <span>{line.desc}</span>
+            </div>
+          );
+        }
+        return (
+          <div
+            key={i}
+            className="text-zinc-700 mb-2 hover:text-red-900 transition-colors duration-300"
+          >
+            {`▪ ${line}`}
+          </div>
+        );
+      });
+    }
+    return <div className="text-zinc-700">{content}</div>;
+  };
 
   return (
     <>
@@ -15,60 +43,24 @@ export const TerminalOutput: React.FC<TerminalOutputProps> = ({ output }) => {
           case "header":
             return (
               <div key={index} className="mb-4">
-                <div className="text-cyan-400 font-bold text-lg">
-                  {`<${item.content}>`}
+                <div className="text-red-900 font-bold text-lg bg-zinc-100 p-2 rounded border-l-4 border-red-900">
+                  {renderContent(item.content)}
                 </div>
               </div>
             );
           case "text":
             return (
-              <div key={index} className="mb-4 text-gray-300">
-                {Array.isArray(item.content)
-                  ? item.content.map((line, i) =>
-                      typeof line === "object" ? (
-                        <div key={i} className="text-gray-300 mb-1">
-                          <span className="text-cyan-400">
-                            {(line as CommandHelp).command}
-                          </span>
-                          <span className="text-gray-500 mx-2">-</span>
-                          <span>{(line as CommandHelp).desc}</span>
-                        </div>
-                      ) : (
-                        <div key={i} className="text-gray-300 mb-1">
-                          {`> ${line}`}
-                        </div>
-                      )
-                    )
-                  : item.content}
+              <div key={index} className="mb-4 text-zinc-800 leading-relaxed">
+                {renderContent(item.content)}
               </div>
             );
           case "section":
             return (
               <div key={index} className="mb-4">
-                <div className="text-purple-400 font-semibold mb-2">
-                  {`[${item.title}]`}
+                <div className="text-red-950 font-semibold mb-2 border-b border-zinc-200 pb-1">
+                  {item.title}
                 </div>
-                <div className="pl-4">
-                  {Array.isArray(item.content) ? (
-                    item.content.map((line, i) =>
-                      typeof line === "object" ? (
-                        <div key={i} className="text-gray-300 mb-1">
-                          <span className="text-cyan-400">
-                            {(line as CommandHelp).command}
-                          </span>
-                          <span className="text-gray-500 mx-2">-</span>
-                          <span>{(line as CommandHelp).desc}</span>
-                        </div>
-                      ) : (
-                        <div key={i} className="text-gray-300 mb-1">
-                          {`> ${line}`}
-                        </div>
-                      )
-                    )
-                  ) : (
-                    <div className="text-gray-300">{item.content}</div>
-                  )}
-                </div>
+                <div className="pl-4">{renderContent(item.content)}</div>
               </div>
             );
           default:
@@ -78,3 +70,5 @@ export const TerminalOutput: React.FC<TerminalOutputProps> = ({ output }) => {
     </>
   );
 };
+
+export default TerminalOutput;

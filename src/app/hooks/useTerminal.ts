@@ -1,4 +1,6 @@
-import { useState, useEffect } from "react";
+"use client";
+
+import { useState, useEffect, KeyboardEvent } from "react";
 import { commands } from "../data/commands";
 import { HistoryEntry } from "../types";
 
@@ -20,6 +22,11 @@ export const useTerminal = () => {
       timestamp: new Date().toLocaleTimeString(),
     };
 
+    if (cleanCmd === "clear") {
+      setHistory([]);
+      return;
+    }
+
     if (commands[cleanCmd]) {
       const result = commands[cleanCmd]();
       newEntry.output = result.output;
@@ -37,7 +44,7 @@ export const useTerminal = () => {
     setInput("");
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       processCommand(input);
     }

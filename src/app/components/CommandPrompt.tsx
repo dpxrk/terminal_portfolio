@@ -1,33 +1,40 @@
+"use client";
 import React from "react";
 
 interface CommandPromptProps {
   input: string;
   currentPath: string;
-  setInput: (value: string) => void;
-  handleKeyPress: (e: React.KeyboardEvent) => void;
+  onInputChange: (value: string) => void;
+  onKeyPress: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
-export const CommandPrompt: React.FC<CommandPromptProps> = ({
+const CommandPrompt: React.FC<CommandPromptProps> = ({
   input,
   currentPath,
-  setInput,
-  handleKeyPress,
+  onInputChange,
+  onKeyPress,
 }) => {
   return (
-    <div className="flex items-center space-x-2">
-      <span className="text-cyan-400/70">
+    <div className="flex items-center space-x-2 text-sm group">
+      <span className="text-red-900/80 group-focus-within:text-red-900 transition-colors duration-300">
         {new Date().toLocaleTimeString()}
       </span>
-      <span className="text-purple-400/70">{currentPath}</span>
-      <span className="text-gray-500">$</span>
+      <span className="text-red-950/80 group-focus-within:text-red-950 transition-colors duration-300">
+        {currentPath}
+      </span>
+      <span className="text-zinc-500 group-focus-within:text-red-900 transition-colors duration-300">
+        ❯
+      </span>
       <input
         type="text"
         value={input}
-        onChange={(e) => setInput(e.target.value)}
-        onKeyPress={handleKeyPress}
-        className="flex-1 bg-transparent outline-none text-gray-300"
+        onChange={(e) => onInputChange(e.target.value)}
+        onKeyPress={onKeyPress}
+        className="flex-1 bg-transparent outline-none text-zinc-700 focus:text-red-900 transition-colors duration-300"
         autoFocus
       />
     </div>
   );
 };
+
+export default CommandPrompt;

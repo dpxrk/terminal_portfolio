@@ -1,28 +1,22 @@
-export type OutputType = "header" | "text" | "section";
-
-export interface CommandOutput {
-  type: OutputType;
+export type CommandOutput = {
+  type: "header" | "text" | "section";
+  content: string | Array<string | CommandItem>;
   title?: string;
-  content: string | string[] | CommandHelp[];
-}
+};
 
-export interface CommandHelp {
+export type CommandItem = {
   command: string;
   desc: string;
-}
+};
 
-export interface HistoryEntry {
+export type HistoryEntry = {
   command: string;
   path: string;
   output: CommandOutput[] | null;
   error: boolean;
   timestamp: string;
-}
+};
 
-export interface Command {
+export type CommandResult = {
   output: CommandOutput[];
-}
-
-export interface Commands {
-  [key: string]: () => { output: CommandOutput[] };
-}
+};
