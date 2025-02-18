@@ -22,20 +22,23 @@ export const useTerminal = () => {
       timestamp: new Date().toLocaleTimeString(),
     };
 
-    if (cleanCmd === "clear") {
+    // Remove the slash and check if the command exists
+    const commandKey = cleanCmd.substring(1);
+
+    if (cleanCmd === "/clear") {
       setHistory([]);
       return;
     }
 
-    if (commands[cleanCmd]) {
-      const result = commands[cleanCmd]();
+    if (commands[commandKey]) {
+      const result = commands[commandKey]();
       newEntry.output = result.output;
     } else {
       newEntry.error = true;
       newEntry.output = [
         {
           type: "text",
-          content: `Command not found: ${cmd}. Type 'help' for available commands.`,
+          content: `Command not found: ${cmd}. Type '/help' for available commands.`,
         },
       ];
     }
@@ -60,7 +63,7 @@ export const useTerminal = () => {
           type: "text",
           content: "Welcome to the digital workspace of Daniel Park",
         },
-        { type: "text", content: "Type 'help' to view available commands" },
+        { type: "text", content: "Type '/help' to view available commands" },
       ],
       error: false,
       timestamp: new Date().toLocaleTimeString(),
