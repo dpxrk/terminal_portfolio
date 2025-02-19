@@ -66,6 +66,16 @@ export const commands: Record<string, () => CommandResult> = {
           "Provided expert guidance in securities management",
         ],
       },
+      {
+        type: "section",
+        title: "Noah Bank",
+        content: [
+          "Position: Loan Officer (May 2017 - December 2017)",
+          "Conducted Financial Analysis on loan applications",
+          "Handled $1M+ in loan applications",
+          "Provided support in SBA and Commercial Loans Applications",
+        ],
+      },
     ],
   }),
 
@@ -75,7 +85,10 @@ export const commands: Record<string, () => CommandResult> = {
       {
         type: "section",
         title: "STEVENS INSTITUTE OF TECHNOLOGY",
-        content: ["Masters in Computer Science", "May 2024 - December 2025"],
+        content: [
+          "Masters in Computer Science",
+          "May 2024 - January 2026[expected graduation]",
+        ],
       },
       {
         type: "section",
