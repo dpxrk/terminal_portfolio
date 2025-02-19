@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { forwardRef } from "react";
 
 interface CommandPromptProps {
   input: string;
@@ -8,33 +8,35 @@ interface CommandPromptProps {
   onKeyPress: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
-const CommandPrompt: React.FC<CommandPromptProps> = ({
-  input,
-  currentPath,
-  onInputChange,
-  onKeyPress,
-}) => {
-  return (
-    <div className="flex items-center space-x-2 text-sm group">
-      <span className="text-red-900/80 group-focus-within:text-red-900 transition-colors duration-300">
-        {new Date().toLocaleTimeString()}
-      </span>
-      <span className="text-red-950/80 group-focus-within:text-red-950 transition-colors duration-300">
-        {currentPath}
-      </span>
-      <span className="text-zinc-500 group-focus-within:text-red-900 transition-colors duration-300">
-        ❯
-      </span>
-      <input
-        type="text"
-        value={input}
-        onChange={(e) => onInputChange(e.target.value)}
-        onKeyPress={onKeyPress}
-        className="flex-1 bg-transparent outline-none text-zinc-700 focus:text-red-900 transition-colors duration-300"
-        autoFocus
-      />
-    </div>
-  );
-};
+const CommandPrompt = forwardRef<HTMLInputElement, CommandPromptProps>(
+  ({ input, currentPath, onInputChange, onKeyPress }, ref) => {
+    return (
+      <div className="flex items-center space-x-2 text-sm group">
+        <span className="text-red-600/80 group-focus-within:text-red-600 transition-colors duration-300">
+          {new Date().toLocaleTimeString()}
+        </span>
+        <span className="text-red-700/80 group-focus-within:text-red-700 transition-colors duration-300">
+          {currentPath}
+        </span>
+        <span className="text-gray-400 group-focus-within:text-red-500 transition-colors duration-300">
+          ❯
+        </span>
+        <input
+          ref={ref}
+          type="text"
+          value={input}
+          onChange={(e) => onInputChange(e.target.value)}
+          onKeyPress={onKeyPress}
+          className="flex-1 bg-transparent outline-none text-gray-700 focus:text-red-600 transition-colors duration-300 caret-red-600"
+          autoFocus
+          autoComplete="off"
+          spellCheck="false"
+        />
+      </div>
+    );
+  }
+);
+
+CommandPrompt.displayName = "CommandPrompt";
 
 export default CommandPrompt;
