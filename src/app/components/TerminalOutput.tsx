@@ -41,7 +41,7 @@ const TerminalOutput: React.FC<TerminalOutputProps> = ({ output }) => {
       <span className="text-zinc-400 mx-2">―</span>
       {contentIndex === index && isTyping ? (
         <TypedContent
-          content={item.desc}
+          content={item.desc || ""}
           onComplete={() => {
             if (isLast) {
               setIsTyping(false);
@@ -59,18 +59,20 @@ const TerminalOutput: React.FC<TerminalOutputProps> = ({ output }) => {
 
   const renderContent = (
     content: string | (string | CommandItem)[]
-  ): React.ReactNode => {
+  ): React.ReactElement[] | null => {
+    if (!content) return null;
+
     if (Array.isArray(content)) {
       if (typeof content[0] === "object" && "command" in content[0]) {
-        // Handle command menu items
-        return content.map((item, idx) => {
-          if (typeof item === "object" && "command" in item) {
-            return renderCommandItem(item, idx, idx === content.length - 1);
-          }
-          return null;
-        });
+        return content
+          .map((item, idx) => {
+            if (typeof item === "object" && "command" in item) {
+              return renderCommandItem(item, idx, idx === content.length - 1);
+            }
+            return null;
+          })
+          .filter((item) => item !== null);
       } else {
-        // Handle regular array items
         return content.map((line, idx) => (
           <div
             key={idx}
@@ -96,11 +98,11 @@ const TerminalOutput: React.FC<TerminalOutputProps> = ({ output }) => {
       }
     }
 
-    return (
-      <div className="text-zinc-700">
+    return [
+      <div key="single-content" className="text-zinc-700">
         {isTyping ? (
           <TypedContent
-            content={content}
+            content={content as string}
             onComplete={() => {
               setIsTyping(false);
               setCurrentIndex((prev) => prev + 1);
@@ -109,8 +111,8 @@ const TerminalOutput: React.FC<TerminalOutputProps> = ({ output }) => {
         ) : (
           content
         )}
-      </div>
-    );
+      </div>,
+    ];
   };
 
   useEffect(() => {
@@ -131,7 +133,6 @@ const TerminalOutput: React.FC<TerminalOutputProps> = ({ output }) => {
             return (
               <div key={index} className="mb-4">
                 <div className="text-red-900 font-bold text-lg bg-zinc-100 p-2 rounded border-l-4 border-red-900">
-                  {/* @ts-expect-error */}
                   {isCurrentItem && isTyping ? (
                     <TypedContent
                       content={
@@ -143,7 +144,11 @@ const TerminalOutput: React.FC<TerminalOutputProps> = ({ output }) => {
                       }}
                     />
                   ) : (
-                    item.content
+                    <>
+                      {renderContent(
+                        item.content as string | (string | CommandItem)[]
+                      )}
+                    </>
                   )}
                 </div>
               </div>
@@ -151,7 +156,6 @@ const TerminalOutput: React.FC<TerminalOutputProps> = ({ output }) => {
           case "text":
             return (
               <div key={index} className="mb-4 text-zinc-800 leading-relaxed">
-                {/* @ts-ignore */}
                 {isCurrentItem && isTyping ? (
                   <TypedContent
                     content={
@@ -163,7 +167,11 @@ const TerminalOutput: React.FC<TerminalOutputProps> = ({ output }) => {
                     }}
                   />
                 ) : (
-                  item.content
+                  <>
+                    {renderContent(
+                      item.content as string | (string | CommandItem)[]
+                    )}
+                  </>
                 )}
               </div>
             );
@@ -184,7 +192,10 @@ const TerminalOutput: React.FC<TerminalOutputProps> = ({ output }) => {
                   )}
                 </div>
                 <div className="pl-4">
-                  {(!isCurrentItem || !isTyping) && renderContent(item.content)}
+                  {(!isCurrentItem || !isTyping) &&
+                    renderContent(
+                      item.content as string | (string | CommandItem)[]
+                    )}
                 </div>
               </div>
             );
