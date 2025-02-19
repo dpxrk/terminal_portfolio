@@ -1,8 +1,14 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 const TerminalHeader: React.FC = () => {
+  const [time, setTime] = useState(new Date().toLocaleTimeString());
+
+  useEffect(() => {
+    setTime(new Date().toLocaleTimeString());
+  }, []);
+
   return (
     <div className="bg-zinc-100 rounded-t-lg p-2.5 flex items-center justify-between border border-zinc-300">
       <div className="flex items-center space-x-2">
@@ -13,9 +19,7 @@ const TerminalHeader: React.FC = () => {
       <div className="text-zinc-700 text-sm font-medium tracking-wide">
         DANIEL_PARK.TERMINAL
       </div>
-      <div className="text-zinc-500 text-sm">
-        {new Date().toLocaleDateString()}
-      </div>
+      <div className="text-zinc-500 text-sm">{time}</div>
     </div>
   );
 };

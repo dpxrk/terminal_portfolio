@@ -1,5 +1,5 @@
 "use client";
-import React, { forwardRef } from "react";
+import React, { useState, forwardRef, useEffect } from "react";
 
 interface CommandPromptProps {
   input: string;
@@ -10,10 +10,16 @@ interface CommandPromptProps {
 
 const CommandPrompt = forwardRef<HTMLInputElement, CommandPromptProps>(
   ({ input, currentPath, onInputChange, onKeyPress }, ref) => {
+    const [time, setTime] = useState(new Date().toLocaleTimeString());
+
+    useEffect(() => {
+      setTime(new Date().toLocaleTimeString());
+    }, []);
+
     return (
       <div className="flex items-center space-x-2 text-sm group">
         <span className="text-red-600/80 group-focus-within:text-red-600 transition-colors duration-300">
-          {new Date().toLocaleTimeString()}
+          {time}
         </span>
         <span className="text-red-700/80 group-focus-within:text-red-700 transition-colors duration-300">
           {currentPath}
