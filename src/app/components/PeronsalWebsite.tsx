@@ -63,10 +63,22 @@ const PersonalWebsite: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-red-50 to-white text-gray-800 p-4 font-mono relative overflow-hidden">
-      {/* Background gradients */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(185,28,28,0.03)_0%,rgba(185,28,28,0)_50%)]"></div>
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(220,38,38,0.03)_0%,rgba(220,38,38,0)_35%)]"></div>
+    <div className="min-h-screen bg-slate-900 text-slate-300 p-4 font-mono relative overflow-hidden">
+      {/* Subtle background pattern */}
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 grid grid-cols-12 gap-4 opacity-5">
+          {Array.from({ length: 12 * 8 }).map((_, i) => (
+            <div
+              key={i}
+              className="h-8 bg-blue-500/10 rounded-sm"
+              style={{
+                animation: `pulse ${6 + (i % 4)}s infinite`,
+                animationDelay: `${(i % 4) * 0.2}s`,
+              }}
+            />
+          ))}
+        </div>
+      </div>
 
       <div className="max-w-4xl mx-auto relative">
         {/* Terminal Header */}
@@ -76,7 +88,8 @@ const PersonalWebsite: React.FC = () => {
         <div
           ref={terminalBodyRef}
           onScroll={handleScroll}
-          className="bg-white/70 backdrop-blur-md p-4 rounded-b-lg h-[40vh] overflow-y-auto border border-t-0 border-red-200 shadow-lg shadow-red-100 no-scrollbar"
+          className="bg-slate-800/50 backdrop-blur-sm p-4 rounded-b-lg h-[40vh] overflow-y-auto 
+            border border-t-0 border-blue-900/30 shadow-lg shadow-blue-900/10 no-scrollbar"
           style={{
             msOverflowStyle: "none",
             scrollbarWidth: "none",
@@ -88,14 +101,14 @@ const PersonalWebsite: React.FC = () => {
               {/* Command Prompt */}
               {entry.command && (
                 <div className="flex items-center space-x-2 text-sm">
-                  <span className="text-red-600/80">{entry.timestamp}</span>
-                  <span className="text-red-700/80">{entry.path}</span>
-                  <span className="text-gray-400">❯</span>
-                  <span className="text-gray-700">{entry.command}</span>
+                  <span className="text-blue-400/80">{entry.timestamp}</span>
+                  <span className="text-indigo-400/80">{entry.path}</span>
+                  <span className="text-slate-500">▶</span>
+                  <span className="text-slate-300">{entry.command}</span>
                 </div>
               )}
               {/* Command Output */}
-              <div className={`pl-4 ${entry.error ? "text-red-500" : ""}`}>
+              <div className={`pl-4 ${entry.error ? "text-red-400" : ""}`}>
                 {entry.output && <TerminalOutput output={entry.output} />}
               </div>
             </div>

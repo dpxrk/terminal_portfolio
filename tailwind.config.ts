@@ -8,9 +8,11 @@ export default {
   ],
   theme: {
     extend: {
-      colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+      keyframes: {
+        pulse: {
+          "0%, 100%": { opacity: "0.05" },
+          "50%": { opacity: "0.1" },
+        },
       },
     },
   },

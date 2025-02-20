@@ -13,19 +13,23 @@ const CommandPrompt = forwardRef<HTMLInputElement, CommandPromptProps>(
     const [time, setTime] = useState(new Date().toLocaleTimeString());
 
     useEffect(() => {
-      setTime(new Date().toLocaleTimeString());
+      const timer = setInterval(() => {
+        setTime(new Date().toLocaleTimeString());
+      }, 1000);
+
+      return () => clearInterval(timer);
     }, []);
 
     return (
       <div className="flex items-center space-x-2 text-sm group">
-        <span className="text-red-600/80 group-focus-within:text-red-600 transition-colors duration-300">
+        <span className="text-blue-400/80 group-focus-within:text-blue-400 transition-colors duration-300">
           {time}
         </span>
-        <span className="text-red-700/80 group-focus-within:text-red-700 transition-colors duration-300">
+        <span className="text-indigo-400/80 group-focus-within:text-indigo-400 transition-colors duration-300">
           {currentPath}
         </span>
-        <span className="text-gray-400 group-focus-within:text-red-500 transition-colors duration-300">
-          ❯
+        <span className="text-slate-500 group-focus-within:text-blue-400 transition-colors duration-300">
+          ▶
         </span>
         <input
           ref={ref}
@@ -33,7 +37,9 @@ const CommandPrompt = forwardRef<HTMLInputElement, CommandPromptProps>(
           value={input}
           onChange={(e) => onInputChange(e.target.value)}
           onKeyPress={onKeyPress}
-          className="flex-1 bg-transparent outline-none text-gray-700 focus:text-red-600 transition-colors duration-300 caret-red-600"
+          className="flex-1 bg-transparent outline-none text-slate-300 focus:text-blue-400 
+            transition-colors duration-300 caret-blue-400 placeholder-slate-600"
+          placeholder="Type a command..."
           autoFocus
           autoComplete="off"
           spellCheck="false"

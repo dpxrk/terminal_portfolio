@@ -12,12 +12,42 @@ export const commands: Record<string, () => CommandResult> = {
           { command: "/education", desc: "View educational background" },
           { command: "/skills", desc: "List technical capabilities" },
           { command: "/contact", desc: "Show contact details" },
+          { command: "/resume", desc: "Download my resume" },
           { command: "/clear", desc: "Clear terminal history" },
           { command: "/help", desc: "Show this help message" },
         ],
       },
     ],
   }),
+
+  resume: () => {
+    // Trigger download
+    const link = document.createElement("a");
+    link.href = "/park_daniel_resume.pdf";
+    link.download = "park_daniel_resume.pdf";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    return {
+      output: [
+        { type: "header", content: "RESUME_DOWNLOAD" },
+        {
+          type: "text",
+          content: "📄 Initiating download of my resume...",
+        },
+        {
+          type: "section",
+          title: "DOWNLOAD_INFO",
+          content: [
+            "File: park_daniel_resume",
+            "Your download should begin automatically.",
+            "If the download doesn't start, please check your browser settings.",
+          ],
+        },
+      ],
+    };
+  },
 
   about: () => ({
     output: [

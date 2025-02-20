@@ -35,10 +35,10 @@ const TerminalOutput: React.FC<TerminalOutputProps> = ({ output }) => {
   ) => (
     <div
       key={index}
-      className="text-zinc-700 mb-2 hover:text-red-900 transition-colors duration-300"
+      className="text-slate-300 mb-2 hover:text-blue-400 transition-colors duration-300"
     >
-      <span className="text-red-900">{item.command}</span>
-      <span className="text-zinc-400 mx-2">―</span>
+      <span className="text-blue-400">{item.command}</span>
+      <span className="text-slate-500 mx-2">›</span>
       {contentIndex === index && isTyping ? (
         <TypedContent
           content={item.desc || ""}
@@ -76,11 +76,11 @@ const TerminalOutput: React.FC<TerminalOutputProps> = ({ output }) => {
         return content.map((line, idx) => (
           <div
             key={idx}
-            className="text-zinc-700 mb-2 hover:text-red-900 transition-colors duration-300"
+            className="text-slate-300 mb-2 hover:text-blue-400 transition-colors duration-300"
           >
             {contentIndex === idx && isTyping ? (
               <TypedContent
-                content={`▪ ${line}`}
+                content={`▶ ${line}`}
                 onComplete={() => {
                   if (idx === content.length - 1) {
                     setIsTyping(false);
@@ -91,7 +91,7 @@ const TerminalOutput: React.FC<TerminalOutputProps> = ({ output }) => {
                 }}
               />
             ) : (
-              `▪ ${line}`
+              `▶ ${line}`
             )}
           </div>
         ));
@@ -99,7 +99,7 @@ const TerminalOutput: React.FC<TerminalOutputProps> = ({ output }) => {
     }
 
     return [
-      <div key="single-content" className="text-zinc-700">
+      <div key="single-content" className="text-slate-300">
         {isTyping ? (
           <TypedContent
             content={content as string}
@@ -132,7 +132,7 @@ const TerminalOutput: React.FC<TerminalOutputProps> = ({ output }) => {
           case "header":
             return (
               <div key={index} className="mb-4">
-                <div className="text-red-900 font-bold text-lg bg-zinc-100 p-2 rounded border-l-4 border-red-900">
+                <div className="text-blue-400 font-bold text-lg bg-slate-800/50 p-2 rounded border border-blue-900/30">
                   {isCurrentItem && isTyping ? (
                     <TypedContent
                       content={
@@ -155,7 +155,7 @@ const TerminalOutput: React.FC<TerminalOutputProps> = ({ output }) => {
             );
           case "text":
             return (
-              <div key={index} className="mb-4 text-zinc-800 leading-relaxed">
+              <div key={index} className="mb-4 text-slate-300 leading-relaxed">
                 {isCurrentItem && isTyping ? (
                   <TypedContent
                     content={
@@ -178,7 +178,7 @@ const TerminalOutput: React.FC<TerminalOutputProps> = ({ output }) => {
           case "section":
             return (
               <div key={index} className="mb-4">
-                <div className="text-red-950 font-semibold mb-2 border-b border-zinc-200 pb-1">
+                <div className="text-indigo-400 font-semibold mb-2 bg-slate-800/30 p-2 rounded">
                   {isCurrentItem && isTyping ? (
                     <TypedContent
                       content={item.title || ""}
