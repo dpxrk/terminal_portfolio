@@ -1,5 +1,6 @@
-import PersonalWebiste from "@/app/components/PeronsalWebsite";
+import PersonalWebsite from "@/app/components/PersonalWebsite";
+
 
 export default function Home() {
-  return <PersonalWebiste />;
+  return <PersonalWebsite />;
 }

@@ -1,76 +1,70 @@
 "use client";
 
-import { useState, useEffect, KeyboardEvent } from "react";
-import { commands } from "../data/commands";
-import { HistoryEntry } from "../types";
+import { useState, useEffect } from 'react';
+import { commands } from '../data/commands';
+import { HistoryEntry, CommandOutput } from '../types';
 
 export const useTerminal = () => {
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState('');
   const [history, setHistory] = useState<HistoryEntry[]>([]);
-
-  const currentPath = "~";
+  const [currentPath, setCurrentPath] = useState('/home');
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const processCommand = (cmd: string) => {
     const cleanCmd = cmd.trim().toLowerCase();
-    if (cleanCmd === "") return;
+    if (cleanCmd === '') return;
+
+    // Create timestamp in a consistent way for server/client
+    const timestamp = new Date().toLocaleTimeString();
 
     const newEntry: HistoryEntry = {
       command: cmd,
       path: currentPath,
       output: null,
       error: false,
-      timestamp: new Date().toLocaleTimeString(),
+      timestamp
     };
 
-    // Remove the slash and check if the command exists
-    const commandKey = cleanCmd.substring(1);
-
-    if (cleanCmd === "/clear") {
-      setHistory([]);
-      return;
-    }
-
-    if (commands[commandKey]) {
-      const result = commands[commandKey]();
+    if (commands[cleanCmd]) {
+      const result = commands[cleanCmd]();
       newEntry.output = result.output;
     } else {
       newEntry.error = true;
-      newEntry.output = [
-        {
-          type: "text",
-          content: `Command not found: ${cmd}. Type '/help' for available commands.`,
-        },
-      ];
+      newEntry.output = [{ 
+        type: 'text', 
+        content: `Command not found: ${cmd}. Type 'help' for available commands.` 
+      }];
     }
 
-    setHistory((prev) => [...prev, newEntry]);
-    setInput("");
+    setHistory(prev => [...prev, newEntry]);
+    setInput('');
   };
 
-  const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
       processCommand(input);
     }
   };
 
+  // Initialize welcome message only on client-side
   useEffect(() => {
-    const initialEntry: HistoryEntry = {
-      command: "",
-      path: currentPath,
-      output: [
-        { type: "header", content: "SYSTEM_INITIALIZED" },
-        {
-          type: "text",
-          content: "Welcome to the digital workspace of Daniel Park",
-        },
-        { type: "text", content: "Type '/help' to view available commands" },
-      ],
-      error: false,
-      timestamp: new Date().toLocaleTimeString(),
-    };
+    if (!isInitialized) {
+      const initialEntry: HistoryEntry = {
+        command: '',
+        path: currentPath,
+        output: [
+          { type: 'header', content: 'SYSTEM_INITIALIZED' },
+          { type: 'text', content: 'Welcome to the digital workspace of Daniel Park' },
+          { type: 'text', content: "Type '/help' to view available commands" }
+        ],
+        error: false,
+        timestamp: new Date().toLocaleTimeString()
+      };
 
-    setHistory([initialEntry]);
-  }, []);
+      setHistory([initialEntry]);
+      setIsInitialized(true);
+    }
+  }, [isInitialized, currentPath]);
 
   return {
     input,
@@ -78,6 +72,6 @@ export const useTerminal = () => {
     history,
     currentPath,
     handleKeyPress,
-    processCommand,
+    processCommand
   };
 };

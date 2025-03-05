@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, forwardRef, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 
 interface CommandPromptProps {
   input: string;
@@ -8,47 +8,49 @@ interface CommandPromptProps {
   onKeyPress: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
-const CommandPrompt = forwardRef<HTMLInputElement, CommandPromptProps>(
-  ({ input, currentPath, onInputChange, onKeyPress }, ref) => {
-    const [time, setTime] = useState(new Date().toLocaleTimeString());
+const CommandPrompt: React.FC<CommandPromptProps> = ({
+  input,
+  currentPath,
+  onInputChange,
+  onKeyPress
+}) => {
 
-    useEffect(() => {
-      const timer = setInterval(() => {
-        setTime(new Date().toLocaleTimeString());
-      }, 1000);
+  const [currentTime, setCurrentTime] = useState('');
+  
+  
+  useEffect(() => {
+    
+    setCurrentTime(new Date().toLocaleTimeString());
+    
+   
+    const timer = setInterval(() => {
+      setCurrentTime(new Date().toLocaleTimeString());
+    }, 1000);
+    
+    return () => clearInterval(timer);
+  }, []);
 
-      return () => clearInterval(timer);
-    }, []);
-
-    return (
-      <div className="flex items-center space-x-2 text-sm group">
-        <span className="text-blue-400/80 group-focus-within:text-blue-400 transition-colors duration-300">
-          {time}
-        </span>
-        <span className="text-indigo-400/80 group-focus-within:text-indigo-400 transition-colors duration-300">
-          {currentPath}
-        </span>
-        <span className="text-slate-500 group-focus-within:text-blue-400 transition-colors duration-300">
-          ▶
-        </span>
-        <input
-          ref={ref}
-          type="text"
-          value={input}
-          onChange={(e) => onInputChange(e.target.value)}
-          onKeyPress={onKeyPress}
-          className="flex-1 bg-transparent outline-none text-slate-300 focus:text-blue-400 
-            transition-colors duration-300 caret-blue-400 placeholder-slate-600"
-          placeholder="Type a command..."
-          autoFocus
-          autoComplete="off"
-          spellCheck="false"
-        />
-      </div>
-    );
-  }
-);
-
-CommandPrompt.displayName = "CommandPrompt";
+  return (
+    <div className="flex items-center space-x-2 text-sm group">
+      <span className="text-blue-400/80 group-focus-within:text-blue-400 transition-colors duration-300">
+        {currentTime}
+      </span>
+      <span className="text-yellow-500/80 group-focus-within:text-yellow-500 transition-colors duration-300">
+        {currentPath}
+      </span>
+      <span className="text-gray-400 group-focus-within:text-blue-400 transition-colors duration-300">
+        ❯
+      </span>
+      <input
+        type="text"
+        value={input}
+        onChange={(e) => onInputChange(e.target.value)}
+        onKeyPress={onKeyPress}
+        className="flex-1 bg-transparent outline-none text-gray-300 focus:text-yellow-200 transition-colors duration-300"
+        autoFocus
+      />
+    </div>
+  );
+};
 
 export default CommandPrompt;

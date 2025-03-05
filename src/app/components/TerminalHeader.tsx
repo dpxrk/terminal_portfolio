@@ -1,45 +1,53 @@
 'use client'
-
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface TerminalHeaderProps {
   isDragging?: boolean;
 }
 
 const TerminalHeader: React.FC<TerminalHeaderProps> = ({ isDragging = false }) => {
+
+  const [currentDate, setCurrentDate] = useState('');
+  
+  useEffect(() => {
+    setCurrentDate(new Date().toLocaleDateString());
+  }, []);
+  
   return (
     <div className={`
-      bg-gradient-to-r from-red-50/80 via-white/80 to-red-50/80 
+      bg-gradient-to-r from-gray-800/95 via-gray-900/95 to-gray-800/95 
       backdrop-blur-md
       rounded-t-lg p-3 flex items-center justify-between 
-      border border-red-200 transition-all duration-300
-      ${isDragging ? 'border-red-400' : ''}
+      border border-yellow-700/30 transition-all duration-300
+      ${isDragging ? 'border-yellow-600/50' : ''}
     `}>
       <div className="flex items-center space-x-2">
         <div className={`
-          h-3 w-3 rounded-full bg-red-500/80 border border-red-600/40 
+          h-3 w-3 rounded-full bg-yellow-500/80 border border-yellow-600/40 
           transition-all duration-300
-          ${isDragging ? 'bg-red-600' : 'hover:bg-red-600'}
+          ${isDragging ? 'bg-yellow-400' : 'hover:bg-yellow-400'}
         `}></div>
         <div className={`
-          h-3 w-3 rounded-full bg-amber-500/80 border border-amber-600/40 
+          h-3 w-3 rounded-full bg-blue-500/80 border border-blue-600/40 
           transition-all duration-300
-          ${isDragging ? 'bg-amber-600' : 'hover:bg-amber-600'}
+          ${isDragging ? 'bg-blue-400' : 'hover:bg-blue-400'}
         `}></div>
         <div className={`
           h-3 w-3 rounded-full bg-green-500/80 border border-green-600/40 
           transition-all duration-300
-          ${isDragging ? 'bg-green-600' : 'hover:bg-green-600'}
+          ${isDragging ? 'bg-green-400' : 'hover:bg-green-400'}
         `}></div>
       </div>
       <div className={`
-        text-red-800/70 text-sm font-medium select-none
-        ${isDragging ? 'text-red-800' : ''}
+        text-yellow-500/80 text-sm font-medium select-none
+        ${isDragging ? 'text-yellow-400' : ''}
       `}>
         DIGITAL_TERMINAL v1.0
         {isDragging && <span className="ml-2 text-xs">• Dragging</span>}
       </div>
-      <div className="text-gray-500 text-sm">{new Date().toLocaleDateString()}</div>
+      <div className="text-gray-500 text-sm">
+        {currentDate}
+      </div>
     </div>
   );
 };
