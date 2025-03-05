@@ -1,114 +1,213 @@
 "use client";
-
-import React, { useState, useEffect, useRef } from "react";
-import { useTerminal } from "../hooks/useTerminal";
-import TerminalHeader from "./TerminalHeader";
-import CommandPrompt from "./CommandPrompt";
-import TerminalOutput from "./TerminalOutput";
-import { HistoryEntry } from "../types";
+import React, { useState, useRef, useEffect } from 'react';
+import { useTerminal } from '../hooks/useTerminal';
+import TerminalHeader from './TerminalHeader';
+import CommandPrompt from './CommandPrompt';
+import TerminalOutput from './TerminalOutput';
+import { HistoryEntry } from '../types';
 
 const PersonalWebsite: React.FC = () => {
-  const { input, setInput, history, currentPath, handleKeyPress } =
-    useTerminal();
+  const {
+    input,
+    setInput,
+    history,
+    currentPath,
+    handleKeyPress,
+  } = useTerminal();
 
-  const terminalBodyRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [autoScroll, setAutoScroll] = useState(true);
+  // For handling dragging and shadow effect
+  const [position, setPosition] = useState({ x: 50, y: 50 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const terminalRef = useRef<HTMLDivElement>(null);
+  const [terminalDimensions, setTerminalDimensions] = useState({ width: 0, height: 0 });
+  const [windowDimensions, setWindowDimensions] = useState({ width: 0, height: 0 });
+  
+  // Calculate shadow direction based on terminal position relative to center light source
+  const calculateShadow = () => {
+    // Light source is at the top center of the screen
+    const lightSourceX = windowDimensions.width / 2;
+    const lightSourceY = 0;
+    
+    // Terminal center position
+    const terminalCenterX = position.x + (terminalDimensions.width / 2);
+    const terminalCenterY = position.y + (terminalDimensions.height / 2);
+    
+    // Direction from light to terminal
+    const directionX = terminalCenterX - lightSourceX;
+    const directionY = terminalCenterY - lightSourceY;
+    
+    // Normalize the direction and adjust shadow length
+    const distance = Math.sqrt(directionX * directionX + directionY * directionY);
+    const normalizedX = distance > 0 ? (directionX / distance) * 12 : 0;
+    const normalizedY = distance > 0 ? (directionY / distance) * 12 : 12;
+    
+    // Calculate shadow intensity based on distance from light
+    const maxDistance = Math.sqrt(Math.pow(windowDimensions.width, 2) + Math.pow(windowDimensions.height, 2));
+    const shadowIntensity = Math.min(0.35, (distance / maxDistance) * 0.5);
+    
+    // Add a colored glow effect that follows the terminal
+    const glowColor = 'rgba(239, 68, 68, 0.15)'; // Red glow that matches the theme
+    
+    return {
+      boxShadow: `
+        0 ${normalizedY}px ${20 + normalizedY}px rgba(0, 0, 0, ${shadowIntensity}),
+        ${normalizedX}px ${normalizedY * 0.5}px 8px rgba(0, 0, 0, ${shadowIntensity * 0.7}),
+        0 0 25px ${glowColor}
+      `,
+      transform: isDragging 
+        ? `perspective(1000px) rotateX(${-directionY * 0.02}deg) rotateY(${directionX * 0.02}deg) scale(1.02)`
+        : `perspective(1000px) rotateX(${-directionY * 0.01}deg) rotateY(${directionX * 0.01}deg)`
+    };
+  };
 
-  // Keep input focused
   useEffect(() => {
-    const focusInput = () => {
-      if (inputRef.current) {
-        inputRef.current.focus();
+    // Get initial terminal dimensions and window dimensions
+    const updateDimensions = () => {
+      if (terminalRef.current) {
+        setTerminalDimensions({
+          width: terminalRef.current.offsetWidth,
+          height: terminalRef.current.offsetHeight
+        });
+      }
+      
+      setWindowDimensions({
+        width: window.innerWidth,
+        height: window.innerHeight
+      });
+    };
+    
+    // Initial update
+    updateDimensions();
+    
+    // Update on resize
+    window.addEventListener('resize', updateDimensions);
+    
+    // Ensure terminal stays within bounds when window resizes
+    const keepInBounds = () => {
+      if (terminalRef.current) {
+        const maxX = window.innerWidth - terminalRef.current.offsetWidth;
+        const maxY = window.innerHeight - terminalRef.current.offsetHeight;
+        
+        setPosition(prev => ({
+          x: Math.min(prev.x, maxX),
+          y: Math.min(prev.y, maxY)
+        }));
       }
     };
-
-    // Focus on mount
-    focusInput();
-
-    // Focus when clicking anywhere in the terminal
-    const handleTerminalClick = (e: MouseEvent) => {
-      if (terminalBodyRef.current?.contains(e.target as Node)) {
-        focusInput();
-      }
-    };
-
-    document.addEventListener("click", handleTerminalClick);
-
-    // Refocus on history change
-    if (history.length > 0) {
-      focusInput();
-    }
-
+    
+    window.addEventListener('resize', keepInBounds);
+    
     return () => {
-      document.removeEventListener("click", handleTerminalClick);
+      window.removeEventListener('resize', updateDimensions);
+      window.removeEventListener('resize', keepInBounds);
     };
-  }, [history]);
+  }, []);
 
-  // Handle auto-scrolling
+  // Custom drag handlers
+  const handleMouseDown = (e: React.MouseEvent) => {
+    // Only allow dragging from terminal header
+    if (!(e.target as HTMLElement).closest('.terminal-header')) return;
+    
+    e.preventDefault();
+    setIsDragging(true);
+    
+    // Calculate the offset between mouse position and terminal position
+    setDragOffset({
+      x: e.clientX - position.x,
+      y: e.clientY - position.y
+    });
+  };
+
+  const handleMouseMove = (e: MouseEvent) => {
+    if (!isDragging) return;
+    
+    // Calculate new position
+    const newX = e.clientX - dragOffset.x;
+    const newY = e.clientY - dragOffset.y;
+    
+    // Keep terminal within viewport bounds
+    const maxX = windowDimensions.width - terminalDimensions.width;
+    const maxY = windowDimensions.height - terminalDimensions.height;
+    
+    setPosition({
+      x: Math.max(0, Math.min(newX, maxX)),
+      y: Math.max(0, Math.min(newY, maxY))
+    });
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  // Add and remove event listeners for drag
   useEffect(() => {
-    if (autoScroll && terminalBodyRef.current) {
-      const scrollContainer = terminalBodyRef.current;
-      scrollContainer.scrollTop = scrollContainer.scrollHeight;
+    if (isDragging) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+    } else {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
     }
-  }, [history, autoScroll, input]);
+    
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging, dragOffset]);
 
-  // Handle scroll events
-  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    const target = e.target as HTMLDivElement;
-    const bottom =
-      Math.abs(target.scrollHeight - target.scrollTop - target.clientHeight) <
-      1;
-    setAutoScroll(bottom);
+  // Dynamic styles for terminal
+  const terminalStyles = {
+    ...calculateShadow(),
+    transition: isDragging ? 'none' : 'transform 0.3s ease, box-shadow 0.3s ease',
+    position: 'absolute',
+    left: `${position.x}px`,
+    top: `${position.y}px`,
+    zIndex: isDragging ? 20 : 10,
+    width: '80%', // Make it wider
+    maxWidth: '900px' // Set a maximum width
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-300 p-4 font-mono relative overflow-hidden">
-      {/* Subtle background pattern */}
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 grid grid-cols-12 gap-4 opacity-5">
-          {Array.from({ length: 12 * 8 }).map((_, i) => (
-            <div
-              key={i}
-              className="h-8 bg-blue-500/10 rounded-sm"
-              style={{
-                animation: `pulse ${6 + (i % 4)}s infinite`,
-                animationDelay: `${(i % 4) * 0.2}s`,
-              }}
-            />
-          ))}
+    <div className="min-h-screen bg-gradient-to-b from-white via-red-50 to-white text-gray-800 p-4 font-mono relative overflow-hidden">
+      {/* Luxury background elements */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(185,28,28,0.03)_0%,rgba(185,28,28,0)_50%)]"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(220,38,38,0.03)_0%,rgba(220,38,38,0)_35%)]"></div>
+      
+      {/* Light source indicator (subtle glow at top center) */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-32 bg-[radial-gradient(circle,rgba(255,255,255,0.3)_0%,transparent_70%)] rounded-full blur-xl"></div>
+      
+      {/* Additional ambient glow effects */}
+      <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-[radial-gradient(circle,rgba(239,68,68,0.05)_0%,transparent_70%)] rounded-full blur-xl"></div>
+      <div className="absolute bottom-1/3 left-1/3 w-72 h-72 bg-[radial-gradient(circle,rgba(239,68,68,0.03)_0%,transparent_70%)] rounded-full blur-xl"></div>
+      
+      <div 
+        ref={terminalRef}
+        className="w-4xl max-w-6xl cursor-default select-none"
+        onMouseDown={handleMouseDown}
+        style={terminalStyles as React.CSSProperties}
+      >
+        {/* Terminal Header - Use as drag handle */}
+        <div className="terminal-header cursor-move">
+          <TerminalHeader isDragging={isDragging} />
         </div>
-      </div>
-
-      <div className="max-w-4xl mx-auto relative">
-        {/* Terminal Header */}
-        <TerminalHeader />
 
         {/* Terminal Body */}
-        <div
-          ref={terminalBodyRef}
-          onScroll={handleScroll}
-          className="bg-slate-800/50 backdrop-blur-sm p-4 rounded-b-lg h-[40vh] overflow-y-auto 
-            border border-t-0 border-blue-900/30 shadow-lg shadow-blue-900/10 no-scrollbar"
-          style={{
-            msOverflowStyle: "none",
-            scrollbarWidth: "none",
-          }}
-        >
+        <div className="bg-white/50 backdrop-blur-md p-4 rounded-b-lg h-[60vh] max-h-[80vh] overflow-y-auto border border-t-0 border-red-200 transition-all duration-300">
           {/* Command History */}
           {history.map((entry: HistoryEntry, i: number) => (
             <div key={i} className="mb-6 space-y-2">
               {/* Command Prompt */}
               {entry.command && (
                 <div className="flex items-center space-x-2 text-sm">
-                  <span className="text-blue-400/80">{entry.timestamp}</span>
-                  <span className="text-indigo-400/80">{entry.path}</span>
-                  <span className="text-slate-500">▶</span>
-                  <span className="text-slate-300">{entry.command}</span>
+                  <span className="text-red-600/80">{entry.timestamp}</span>
+                  <span className="text-red-700/80">{entry.path}</span>
+                  <span className="text-gray-400">❯</span>
+                  <span className="text-gray-700">{entry.command}</span>
                 </div>
               )}
               {/* Command Output */}
-              <div className={`pl-4 ${entry.error ? "text-red-400" : ""}`}>
+              <div className={`pl-4 ${entry.error ? 'text-red-500' : ''}`}>
                 {entry.output && <TerminalOutput output={entry.output} />}
               </div>
             </div>
@@ -116,7 +215,6 @@ const PersonalWebsite: React.FC = () => {
 
           {/* Current Input */}
           <CommandPrompt
-            ref={inputRef}
             input={input}
             currentPath={currentPath}
             onInputChange={setInput}

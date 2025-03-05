@@ -40,3 +40,40 @@ body {
 input.caret-red-600 {
   caret-color: #dc2626;
 }
+
+
+@layer utilities {
+  .bg-gradient-radial {
+    background-image: radial-gradient(var(--tw-gradient-stops));
+  }
+  
+  .terminal-shadow-normal {
+    box-shadow: 
+      0 10px 25px rgba(0, 0, 0, 0.1),
+      0 5px 10px rgba(0, 0, 0, 0.05);
+  }
+  
+  .terminal-shadow-dragging {
+    box-shadow: 
+      0 15px 35px rgba(0, 0, 0, 0.15),
+      0 10px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .terminal-3d {
+    transform: perspective(1000px) rotateX(0deg) rotateY(0deg);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .terminal-3d-dragging {
+    transform: perspective(1000px) rotateX(2deg) rotateY(-1deg) scale(1.02);
+  }
+}
+
+/* Add styles for the draggable terminal */
+.react-draggable {
+  z-index: 10;
+}
+
+.react-draggable-dragging {
+  z-index: 20;
+}
