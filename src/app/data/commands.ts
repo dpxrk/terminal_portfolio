@@ -23,8 +23,8 @@ export const commands: Record<string, () => CommandResult> = {
   resume: () => {
     // Trigger download
     const link = document.createElement("a");
-    link.href = "/park_daniel_resume.pdf";
-    link.download = "park_daniel_resume.pdf";
+    link.href = "/dpark_resume.pdf";
+    link.download = "dpark_resume.pdf";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -40,7 +40,7 @@ export const commands: Record<string, () => CommandResult> = {
           type: "section",
           title: "DOWNLOAD_INFO",
           content: [
-            "File: park_daniel_resume",
+            "File: dpark_resume.pdf",
             "Your download should begin automatically.",
             "If the download doesn't start, please check your browser settings.",
           ],
