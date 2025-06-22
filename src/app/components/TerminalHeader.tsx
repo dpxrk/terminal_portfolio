@@ -6,47 +6,63 @@ interface TerminalHeaderProps {
 }
 
 const TerminalHeader: React.FC<TerminalHeaderProps> = ({ isDragging = false }) => {
-
-  const [currentDate, setCurrentDate] = useState('');
+  const [currentTime, setCurrentTime] = useState('');
   
   useEffect(() => {
-    setCurrentDate(new Date().toLocaleDateString());
+    const updateTime = () => {
+      const now = new Date();
+      setCurrentTime(now.toLocaleTimeString('en-US', { 
+        hour12: false, 
+        hour: '2-digit', 
+        minute: '2-digit',
+        second: '2-digit'
+      }));
+    };
+    
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    
+    return () => clearInterval(interval);
   }, []);
   
   return (
     <div className={`
-      bg-gradient-to-r from-gray-800/95 via-gray-900/95 to-gray-800/95 
-      backdrop-blur-md
-      rounded-t-lg p-3 flex items-center justify-between 
-      border border-yellow-700/30 transition-all duration-300
-      ${isDragging ? 'border-yellow-600/50' : ''}
+      bg-black/95 backdrop-blur-xl rounded-t-xl p-5 flex items-center justify-between 
+      border border-b-0 border-luxury-gold/10 transition-all duration-500
+      ${isDragging ? 'bg-black' : ''}
     `}>
-      <div className="flex items-center space-x-2">
-        <div className={`
-          h-3 w-3 rounded-full bg-yellow-500/80 border border-yellow-600/40 
-          transition-all duration-300
-          ${isDragging ? 'bg-yellow-400' : 'hover:bg-yellow-400'}
-        `}></div>
-        <div className={`
-          h-3 w-3 rounded-full bg-blue-500/80 border border-blue-600/40 
-          transition-all duration-300
-          ${isDragging ? 'bg-blue-400' : 'hover:bg-blue-400'}
-        `}></div>
-        <div className={`
-          h-3 w-3 rounded-full bg-green-500/80 border border-green-600/40 
-          transition-all duration-300
-          ${isDragging ? 'bg-green-400' : 'hover:bg-green-400'}
-        `}></div>
+      <div className="flex items-center space-x-4">
+        {/* Elegant window controls */}
+        <div className="flex items-center space-x-2">
+          <div className="h-3 w-3 rounded-full bg-gradient-to-br from-gray-600 to-gray-700 border border-gray-800 transition-all duration-300 hover:scale-110" />
+          <div className="h-3 w-3 rounded-full bg-gradient-to-br from-gray-600 to-gray-700 border border-gray-800 transition-all duration-300 hover:scale-110" />
+          <div className="h-3 w-3 rounded-full bg-gradient-to-br from-gray-600 to-gray-700 border border-gray-800 transition-all duration-300 hover:scale-110" />
+        </div>
+        
+        {/* Status indicator */}
+        <div className="flex items-center space-x-2">
+          <div className="w-1.5 h-1.5 bg-luxury-gold rounded-full animate-pulse" />
+          <span className="text-xs text-muted uppercase tracking-widest font-light">Active</span>
+        </div>
       </div>
+      
+      {/* Terminal title */}
       <div className={`
-        text-yellow-500/80 text-sm font-medium select-none
-        ${isDragging ? 'text-yellow-400' : ''}
+        text-sm font-light tracking-[0.2em] select-none uppercase
+        ${isDragging ? 'text-luxury-gold' : 'text-muted'}
+        transition-colors duration-300
       `}>
-        DIGITAL_TERMINAL v1.0
-        {isDragging && <span className="ml-2 text-xs">• Dragging</span>}
+        Portfolio Terminal
+        {isDragging && (
+          <span className="ml-3 text-xs text-luxury-gold/60 lowercase tracking-wide">
+            • moving
+          </span>
+        )}
       </div>
-      <div className="text-gray-500 text-sm">
-        {currentDate}
+      
+      {/* Time display */}
+      <div className="text-xs text-muted tabular-nums">
+        {currentTime}
       </div>
     </div>
   );

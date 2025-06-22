@@ -7,15 +7,28 @@ import { HistoryEntry, CommandOutput } from '../types';
 export const useTerminal = () => {
   const [input, setInput] = useState('');
   const [history, setHistory] = useState<HistoryEntry[]>([]);
-  const [currentPath, setCurrentPath] = useState('/home');
+  const [currentPath, setCurrentPath] = useState('~/portfolio');
   const [isInitialized, setIsInitialized] = useState(false);
 
   const processCommand = (cmd: string) => {
-    const cleanCmd = cmd.trim().toLowerCase();
-    if (cleanCmd === '') return;
+    const trimmedCmd = cmd.trim().toLowerCase();
+    if (trimmedCmd === '') return;
 
-    // Create timestamp in a consistent way for server/client
-    const timestamp = new Date().toLocaleTimeString();
+    // Remove leading slash if present
+    const cleanCmd = trimmedCmd.startsWith('/') ? trimmedCmd.slice(1) : trimmedCmd;
+
+    // Clear terminal
+    if (cleanCmd === 'clear') {
+      setHistory([]);
+      return;
+    }
+
+    const timestamp = new Date().toLocaleTimeString('en-US', { 
+      hour12: false, 
+      hour: '2-digit', 
+      minute: '2-digit',
+      second: '2-digit'
+    });
 
     const newEntry: HistoryEntry = {
       command: cmd,
@@ -32,7 +45,7 @@ export const useTerminal = () => {
       newEntry.error = true;
       newEntry.output = [{ 
         type: 'text', 
-        content: `Command not found: ${cmd}. Type 'help' for available commands.` 
+        content: `Command not found: ${cmd}. Type '/help' for available commands.` 
       }];
     }
 
@@ -46,19 +59,34 @@ export const useTerminal = () => {
     }
   };
 
-  // Initialize welcome message only on client-side
+  // Initialize with modern welcome message
   useEffect(() => {
     if (!isInitialized) {
       const initialEntry: HistoryEntry = {
         command: '',
         path: currentPath,
         output: [
-          { type: 'header', content: 'SYSTEM_INITIALIZED' },
-          { type: 'text', content: 'Welcome to the digital workspace of Daniel Park' },
-          { type: 'text', content: "Type '/help' to view available commands" }
+          { 
+            type: 'header', 
+            content: 'SYSTEM ONLINE' 
+          },
+          { 
+            type: 'text', 
+            content: [
+              'Welcome to the digital workspace of Daniel Park',
+              'Software Engineer | Full Stack Developer | AI Enthusiast',
+              '',
+              "Type '/help' to explore available commands"
+            ]
+          }
         ],
         error: false,
-        timestamp: new Date().toLocaleTimeString()
+        timestamp: new Date().toLocaleTimeString('en-US', { 
+          hour12: false, 
+          hour: '2-digit', 
+          minute: '2-digit',
+          second: '2-digit'
+        })
       };
 
       setHistory([initialEntry]);

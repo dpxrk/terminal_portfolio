@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 interface CommandPromptProps {
   input: string;
@@ -14,41 +14,67 @@ const CommandPrompt: React.FC<CommandPromptProps> = ({
   onInputChange,
   onKeyPress
 }) => {
-
   const [currentTime, setCurrentTime] = useState('');
-  
+  const [showCursor, setShowCursor] = useState(true);
+  const inputRef = useRef<HTMLInputElement>(null);
   
   useEffect(() => {
+    const updateTime = () => {
+      setCurrentTime(new Date().toLocaleTimeString('en-US', { 
+        hour12: false, 
+        hour: '2-digit', 
+        minute: '2-digit',
+        second: '2-digit'
+      }));
+    };
     
-    setCurrentTime(new Date().toLocaleTimeString());
-    
-   
-    const timer = setInterval(() => {
-      setCurrentTime(new Date().toLocaleTimeString());
-    }, 1000);
+    updateTime();
+    const timer = setInterval(updateTime, 1000);
     
     return () => clearInterval(timer);
   }, []);
 
+  useEffect(() => {
+    const cursorInterval = setInterval(() => {
+      setShowCursor(prev => !prev);
+    }, 500);
+    
+    return () => clearInterval(cursorInterval);
+  }, []);
+
   return (
-    <div className="flex items-center space-x-2 text-sm group">
-      <span className="text-blue-400/80 group-focus-within:text-blue-400 transition-colors duration-300">
+    <div className="flex items-center space-x-3 text-sm group animate-fade-in">
+      <span className="text-muted tabular-nums">
         {currentTime}
       </span>
-      <span className="text-yellow-500/80 group-focus-within:text-yellow-500 transition-colors duration-300">
+      <span className="text-luxury-gold/70 font-light">
         {currentPath}
       </span>
-      <span className="text-gray-400 group-focus-within:text-blue-400 transition-colors duration-300">
-        ❯
+      <span className="text-muted">
+        ›
       </span>
-      <input
-        type="text"
-        value={input}
-        onChange={(e) => onInputChange(e.target.value)}
-        onKeyPress={onKeyPress}
-        className="flex-1 bg-transparent outline-none text-gray-300 focus:text-yellow-200 transition-colors duration-300"
-        autoFocus
-      />
+      <div className="flex-1 relative">
+        <input
+          ref={inputRef}
+          type="text"
+          value={input}
+          onChange={(e) => onInputChange(e.target.value)}
+          onKeyPress={onKeyPress}
+          className="w-full bg-transparent outline-none text-cream/90 focus:text-cream transition-colors duration-300 pr-4 font-light placeholder-muted/50"
+          autoFocus
+          spellCheck={false}
+          placeholder="Type /help for commands"
+        />
+        {/* Elegant cursor */}
+        <span 
+          className={`absolute top-0 bottom-0 w-[2px] bg-luxury-gold transition-opacity duration-200 ${
+            showCursor && input.length === 0 ? 'opacity-60' : 'opacity-0'
+          }`}
+          style={{ 
+            left: `${input.length * 0.55}rem`
+          }}
+        />
+      </div>
     </div>
   );
 };

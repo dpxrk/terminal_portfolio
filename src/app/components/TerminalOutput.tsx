@@ -13,21 +13,24 @@ const TerminalOutput: React.FC<TerminalOutputProps> = ({ output }) => {
       return content.map((line, i) => {
         if (typeof line === 'object') {
           return (
-            <div key={i} className="text-gray-300 mb-2 hover:text-yellow-300 transition-colors duration-300">
-              <span className="text-yellow-500">{line.command}</span>
-              <span className="text-gray-500 mx-2">―</span>
-              <span>{line.desc}</span>
+            <div key={i} className="text-cream/80 mb-3 hover:text-cream transition-all duration-300 group cursor-default">
+              <span className="text-luxury-gold font-medium group-hover:text-luxury-gold/90 transition-all duration-300">
+                {line.command}
+              </span>
+              <span className="text-muted/60 mx-3 font-light">—</span>
+              <span className="text-muted group-hover:text-cream/70 font-light">{line.desc}</span>
             </div>
           );
         }
         return (
-          <div key={i} className="text-gray-300 mb-2 hover:text-yellow-300 transition-colors duration-300">
-            {`◆ ${line}`}
+          <div key={i} className="text-cream/80 mb-2 hover:text-cream transition-all duration-300 flex items-center space-x-2">
+            <span className="text-luxury-gold/60">•</span>
+            <span className="font-light">{line}</span>
           </div>
         );
       });
     }
-    return <div className="text-gray-300">{content}</div>;
+    return <div className="text-cream/80 font-light">{content}</div>;
   };
 
   return (
@@ -36,25 +39,31 @@ const TerminalOutput: React.FC<TerminalOutputProps> = ({ output }) => {
         switch (item.type) {
           case 'header':
             return (
-              <div key={index} className="mb-4">
-                <div className="text-yellow-500 font-bold text-lg bg-gradient-to-r from-gray-800 to-gray-900 p-2 rounded-lg border border-yellow-700/30">
-                  {`❧ ${item.content} ❧`}
+              <div key={index} className="mb-6 animate-fade-in" style={{ animationDelay: `${index * 0.1}s` }}>
+                <div className="relative">
+                  <div className="text-xl font-light tracking-[0.3em] uppercase text-luxury-gold">
+                    {item.content}
+                  </div>
+                  <div className="absolute -bottom-2 left-0 w-16 h-px bg-gradient-to-r from-luxury-gold to-transparent"></div>
                 </div>
               </div>
             );
           case 'text':
             return (
-              <div key={index} className="mb-4 text-gray-300 leading-relaxed">
+              <div key={index} className="mb-4 text-cream/80 leading-relaxed animate-fade-in" style={{ animationDelay: `${index * 0.1}s` }}>
                 {renderContent(item.content)}
               </div>
             );
           case 'section':
             return (
-              <div key={index} className="mb-6">
-                <div className="text-yellow-600 font-semibold mb-2 bg-gradient-to-r from-gray-800 to-transparent p-2 rounded-lg">
-                  {`◈ ${item.title} ◈`}
+              <div key={index} className="mb-6 animate-fade-in" style={{ animationDelay: `${index * 0.1}s` }}>
+                <div className="mb-3">
+                  <span className="text-soft-gold font-normal text-sm tracking-wider uppercase">
+                    {item.title}
+                  </span>
+                  <div className="h-px bg-gradient-to-r from-luxury-gold/20 to-transparent mt-2"></div>
                 </div>
-                <div className="pl-4">
+                <div className="pl-4 border-l border-luxury-gold/10 hover:border-luxury-gold/20 transition-colors duration-500">
                   {renderContent(item.content)}
                 </div>
               </div>
