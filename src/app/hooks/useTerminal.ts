@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { commands } from '../data/commands';
-import { HistoryEntry, CommandOutput } from '../types';
+import { HistoryEntry } from '../types';
 
 export const useTerminal = () => {
   const [input, setInput] = useState('');
   const [history, setHistory] = useState<HistoryEntry[]>([]);
-  const [currentPath, setCurrentPath] = useState('~/portfolio');
+  const [currentPath] = useState('~/portfolio');
   const [isInitialized, setIsInitialized] = useState(false);
 
   const processCommand = (cmd: string) => {

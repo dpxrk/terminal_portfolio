@@ -42,7 +42,7 @@ const TerminalOutput: React.FC<TerminalOutputProps> = ({ output }) => {
               <div key={index} className="mb-6 animate-fade-in" style={{ animationDelay: `${index * 0.1}s` }}>
                 <div className="relative">
                   <div className="text-xl font-light tracking-[0.3em] uppercase text-luxury-gold">
-                    {item.content}
+                    {typeof item.content === 'string' ? item.content : ''}
                   </div>
                   <div className="absolute -bottom-2 left-0 w-16 h-px bg-gradient-to-r from-luxury-gold to-transparent"></div>
                 </div>

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useTerminal } from '../hooks/useTerminal';
 import TerminalHeader from './TerminalHeader';
 import CommandPrompt from './CommandPrompt';
@@ -80,7 +80,7 @@ const PersonalWebsite: React.FC = () => {
     });
   };
 
-  const handleMouseMove = (e: MouseEvent) => {
+  const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!isDragging) return;
     
     const newX = e.clientX - dragOffset.x;
@@ -93,7 +93,7 @@ const PersonalWebsite: React.FC = () => {
       x: Math.max(0, Math.min(newX, maxX)),
       y: Math.max(0, Math.min(newY, maxY))
     });
-  };
+  }, [isDragging, dragOffset, windowDimensions.width, windowDimensions.height, terminalDimensions.width, terminalDimensions.height]);
 
   const handleMouseUp = () => {
     setIsDragging(false);
@@ -114,7 +114,7 @@ const PersonalWebsite: React.FC = () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [isDragging, dragOffset, isMounted]);
+  }, [isDragging, dragOffset, isMounted, handleMouseMove]);
 
   const terminalStyles = {
     boxShadow: isDragging 
