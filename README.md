@@ -55,6 +55,3 @@ Type these commands in the terminal:
 - **GitHub**: [github.com/dpxrk](https://github.com/dpxrk)
 - **Website**: [dpxrk.vercel.app](https://dpxrk.vercel.app)
 
-## 📄 License
-
-This project is open source and available under the MIT License.
