@@ -2,6 +2,7 @@ export type CommandOutput = {
   type: "header" | "text" | "section";
   content: string | Array<string | CommandItem>;
   title?: string;
+  animated?: boolean;
 };
 
 export type CommandItem = {

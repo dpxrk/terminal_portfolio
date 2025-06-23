@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Daniel_Park_Terminal",
-  description: "Welcome to the digital workspace of Daniel Park",
+  title: "Daniel Park | Workspace ",
+  description: "Welcome to the digital workspace of Daniel Park -- #OpenToWork",
 };
 
 export default function RootLayout({

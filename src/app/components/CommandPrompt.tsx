@@ -34,6 +34,39 @@ const CommandPrompt: React.FC<CommandPromptProps> = ({
     return () => clearInterval(timer);
   }, []);
 
+  // Auto-focus input on mount and when it loses focus
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
+
+  // Keep focus on the input
+  useEffect(() => {
+    const handleFocus = () => {
+      if (inputRef.current && document.activeElement !== inputRef.current) {
+        inputRef.current.focus();
+      }
+    };
+
+    // Check focus periodically
+    const focusInterval = setInterval(handleFocus, 100);
+    
+    // Also focus on any click in the window
+    const handleWindowClick = () => {
+      setTimeout(handleFocus, 10);
+    };
+
+    window.addEventListener('click', handleWindowClick);
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      clearInterval(focusInterval);
+      window.removeEventListener('click', handleWindowClick);
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, []);
+
   useEffect(() => {
     const cursorInterval = setInterval(() => {
       setShowCursor(prev => !prev);

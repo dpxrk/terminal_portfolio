@@ -51,6 +51,14 @@ export const useTerminal = () => {
 
     setHistory(prev => [...prev, newEntry]);
     setInput('');
+    
+    // Small delay to ensure DOM updates before refocusing
+    setTimeout(() => {
+      const inputElement = document.querySelector('input[type="text"]') as HTMLInputElement;
+      if (inputElement) {
+        inputElement.focus();
+      }
+    }, 10);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -68,14 +76,13 @@ export const useTerminal = () => {
         output: [
           { 
             type: 'header', 
-            content: 'SYSTEM ONLINE' 
+            content: 'SYSTEM ONLINE'
           },
           { 
             type: 'text', 
             content: [
-              'Welcome to the digital workspace of Daniel Park',
+              'Welcome to the digital workspace of Daniel Park -- #OpenToWork',
               'Software Engineer | Full Stack Developer | AI Enthusiast',
-              '',
               "Type '/help' to explore available commands"
             ]
           }

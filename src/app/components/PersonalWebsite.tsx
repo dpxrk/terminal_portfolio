@@ -23,6 +23,7 @@ const PersonalWebsite: React.FC = () => {
   const terminalRef = useRef<HTMLDivElement>(null);
   const [terminalDimensions, setTerminalDimensions] = useState({ width: 0, height: 0 });
   const [windowDimensions, setWindowDimensions] = useState({ width: 0, height: 0 });
+  const terminalBodyRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
     setIsMounted(true);
@@ -116,6 +117,22 @@ const PersonalWebsite: React.FC = () => {
     };
   }, [isDragging, dragOffset, isMounted, handleMouseMove]);
 
+  // Auto-scroll to bottom when new content is added
+  useEffect(() => {
+    if (terminalBodyRef.current) {
+      const scrollToBottom = () => {
+        terminalBodyRef.current?.scrollTo({
+          top: terminalBodyRef.current.scrollHeight,
+          behavior: 'smooth'
+        });
+      };
+      
+      // Small delay to ensure content is rendered
+      const timeoutId = setTimeout(scrollToBottom, 100);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [history]);
+
   const terminalStyles = {
     boxShadow: isDragging 
       ? '0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(212, 175, 55, 0.1)'
@@ -165,7 +182,7 @@ const PersonalWebsite: React.FC = () => {
           </div>
 
           {/* Terminal Body with refined glass effect */}
-          <div className="terminal-body bg-black/90 backdrop-blur-xl rounded-b-xl p-8 h-[70vh] max-h-[700px] overflow-y-auto border-x border-b border-luxury-gold/10 relative">
+          <div ref={terminalBodyRef} className="terminal-body bg-black/90 backdrop-blur-xl rounded-b-xl p-8 h-[70vh] max-h-[700px] overflow-y-auto border-x border-b border-luxury-gold/10 relative scroll-smooth">
             {/* Subtle inner glow */}
             <div className="absolute inset-0 rounded-b-xl bg-gradient-to-b from-luxury-gold/5 via-transparent to-transparent pointer-events-none" />
             
@@ -181,7 +198,20 @@ const PersonalWebsite: React.FC = () => {
                   </div>
                 )}
                 <div className={`pl-4 ${entry.error ? 'text-error' : ''}`}>
-                  {entry.output && <TerminalOutput output={entry.output} />}
+                  {entry.output && (
+                    <TerminalOutput 
+                      output={entry.output} 
+                      isLatest={i === history.length - 1}
+                      onTyping={() => {
+                        if (terminalBodyRef.current) {
+                          terminalBodyRef.current.scrollTo({
+                            top: terminalBodyRef.current.scrollHeight,
+                            behavior: 'smooth'
+                          });
+                        }
+                      }}
+                    />
+                  )}
                 </div>
               </div>
             ))}
@@ -193,6 +223,9 @@ const PersonalWebsite: React.FC = () => {
               onInputChange={setInput}
               onKeyPress={handleKeyPress}
             />
+            
+            {/* Scroll anchor */}
+            <div className="h-4" />
           </div>
         </div>
       )}
