@@ -124,7 +124,6 @@ const TerminalOutput: React.FC<TerminalOutputProps> = ({ output, isLatest = fals
   const renderContent = (content: string | Array<string | CommandItem>, parentKey: string, shouldType: boolean) => {
     if (Array.isArray(content)) {
       return content.map((line, i) => {
-        const lineKey = `${parentKey}-line-${i}`;
         const lineId = `${parentKey}-${i}`;
         const isCompleted = completedItems.has(lineId);
         const shouldTypeLine = shouldType && currentSubIndex === i && !isCompleted;

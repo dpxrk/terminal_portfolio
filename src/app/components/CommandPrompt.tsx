@@ -16,7 +16,7 @@ const CommandPrompt: React.FC<CommandPromptProps> = ({
 }) => {
   const [currentTime, setCurrentTime] = useState('');
   const [showCursor, setShowCursor] = useState(true);
-  const [inputKey, setInputKey] = useState(Date.now());
+  const [inputKey] = useState(Date.now());
   const inputRef = useRef<HTMLInputElement>(null);
   
   useEffect(() => {
