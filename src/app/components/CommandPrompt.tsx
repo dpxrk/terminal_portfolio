@@ -16,6 +16,7 @@ const CommandPrompt: React.FC<CommandPromptProps> = ({
 }) => {
   const [currentTime, setCurrentTime] = useState('');
   const [showCursor, setShowCursor] = useState(true);
+  const [inputKey, setInputKey] = useState(Date.now());
   const inputRef = useRef<HTMLInputElement>(null);
   
   useEffect(() => {
@@ -87,17 +88,31 @@ const CommandPrompt: React.FC<CommandPromptProps> = ({
         ›
       </span>
       <div className="flex-1 relative">
-        <input
-          ref={inputRef}
-          type="text"
-          value={input}
-          onChange={(e) => onInputChange(e.target.value)}
-          onKeyPress={onKeyPress}
-          className="w-full bg-transparent outline-none text-cream/90 focus:text-cream transition-colors duration-300 pr-4 font-light placeholder-muted/50"
-          autoFocus
-          spellCheck={false}
-          placeholder="Type /help for commands"
-        />
+        <form onSubmit={(e) => e.preventDefault()} autoComplete="off">
+          <input
+            key={inputKey}
+            ref={inputRef}
+            id="terminal-command-input"
+            type="text"
+            value={input}
+            onChange={(e) => onInputChange(e.target.value)}
+            onKeyPress={onKeyPress}
+            className="w-full bg-transparent outline-none text-cream/90 focus:text-cream transition-colors duration-300 pr-4 font-light placeholder-muted/50"
+            autoFocus
+            spellCheck={false}
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
+            data-form-type="other"
+            data-lpignore="true"
+            aria-label="Terminal command input"
+            aria-autocomplete="none"
+            list="none"
+            name={`terminal-input-${Date.now()}`}
+            placeholder="Type /help for commands"
+            style={{ WebkitAppearance: 'none' }}
+          />
+        </form>
         {/* Elegant cursor */}
         <span 
           className={`absolute top-0 bottom-0 w-[2px] bg-luxury-gold transition-opacity duration-200 ${

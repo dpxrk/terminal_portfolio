@@ -11,6 +11,7 @@ export const commands: Record<string, () => CommandResult> = {
           { command: "/experience", desc: "View professional experience" },
           { command: "/education", desc: "View educational background" },
           { command: "/skills", desc: "List technical capabilities" },
+          { command: "/projects", desc: "View my project portfolio" },
           { command: "/contact", desc: "Show contact details" },
           { command: "/resume", desc: "Download my resume" },
           { command: "/clear", desc: "Clear terminal history" },
@@ -68,11 +69,12 @@ export const commands: Record<string, () => CommandResult> = {
         type: "section",
         title: "RICHEMONT NORTH AMERICA",
         content: [
-          "Position: Procurement Specialist (August 2024 - Present)",
-          "Engineered AI-powered Teams Bot for procurement intelligence",
-          "Created executive-level presentations for CFO",
-          "Managed Purchase Orders ($5K-$5M) through SAP",
-          "Led Vendor Due Diligence initiatives",
+          "Position: P2P Operational Specialist (August 2024 - Present)",
+          "Engineered AI-powered Microsoft Teams Bot for 500+ users using Power Virtual Agent",
+          "Created executive-level presentations for CFO influencing strategic decisions",
+          "Managed Purchase Orders ($5K-$5M+) through SAP ensuring SOX compliance",
+          "Led strategic Vendor Due Diligence initiatives with comprehensive risk assessments",
+          "Delivered process improvements for executive-level projects in luxury goods environment",
         ],
       },
       {
@@ -80,10 +82,10 @@ export const commands: Record<string, () => CommandResult> = {
         title: "VISIONABLE GLOBAL INC",
         content: [
           "Position: Full Stack Developer (August 2021 - August 2023)",
-          "Led codebase modernization to Next.js and TypeScript",
-          "Developed WebRTC-based video conferencing features",
-          "Implemented AWS-Amplify for secure user authentication",
-          "Created Customer Portal for account management",
+          "Spearheaded codebase modernization to Next.js and TypeScript for improved scalability",
+          "Developed real-time video conferencing features using WebRTC API",
+          "Led creation of MVPs using CRUD methodology and MaterialUI components",
+          "Implemented AWS-Amplify for secure user authentication and user pool management",
         ],
       },
       {
@@ -117,14 +119,22 @@ export const commands: Record<string, () => CommandResult> = {
         title: "STEVENS INSTITUTE OF TECHNOLOGY",
         content: [
           "Masters in Computer Science",
-          "May 2024 - January 2026[expected graduation]",
+          "May 2024 - May 2026 (Expected)",
+        ],
+      },
+      {
+        type: "section",
+        title: "APP ACADEMY",
+        content: [
+          "Software Development Bootcamp",
+          "October 2020 - April 2021",
         ],
       },
       {
         type: "section",
         title: "RUTGERS UNIVERSITY",
         content: [
-          "Bachelors of Science in Finance",
+          "Bachelor of Science in Finance",
           "September 2013 - December 2017",
         ],
       },
@@ -167,6 +177,24 @@ export const commands: Record<string, () => CommandResult> = {
           "Zustand",
           "SAP",
           "Microsoft 365",
+        ],
+      },
+    ],
+  }),
+
+  projects: () => ({
+    output: [
+      { type: "header", content: "PROJECTS" },
+      {
+        type: "section",
+        title: "PACTWISE - AI-POWERED CONTRACT MANAGEMENT PLATFORM",
+        content: [
+          "Architected full-stack AI-driven contract and vendor management application",
+          "Built with Next.js, React, TypeScript, and Convex backend-as-a-service",
+          "Engineered multi-agent AI system (Manager, Financial, Legal, Secretary agents)",
+          "Automated contract analysis, risk assessment, and compliance verification",
+          "Implemented secure file uploads and version management for contracts",
+          "Designed comprehensive backend with robust database schema and CRUD APIs",
         ],
       },
     ],

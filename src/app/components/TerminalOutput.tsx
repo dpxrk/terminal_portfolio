@@ -130,42 +130,51 @@ const TerminalOutput: React.FC<TerminalOutputProps> = ({ output, isLatest = fals
         const shouldTypeLine = shouldType && currentSubIndex === i && !isCompleted;
         
         if (typeof line === 'object') {
+          // Show the full line immediately when typing, both command and description
+          const showFullLine = shouldTypeLine || (shouldType && currentSubIndex > i) || !shouldType;
+          
           return (
             <div key={i} className="text-cream/80 mb-3 hover:text-cream transition-all duration-300 group cursor-default">
-              <span className="text-luxury-gold font-medium group-hover:text-luxury-gold/90 transition-all duration-300">
-                {shouldTypeLine ? (
-                  <TypingText 
-                    text={line.command} 
-                    speed={2} 
-                    onType={onTyping}
-                    onComplete={() => {}}
-                  />
-                ) : (
-                  (shouldType && currentSubIndex > i) || !shouldType ? line.command : ''
-                )}
-              </span>
-              {((shouldType && currentSubIndex > i) || !shouldType || isCompleted) && (
+              {shouldTypeLine ? (
+                // When it's this line's turn to type, show the whole line with typing animation
                 <>
+                  <span className="text-luxury-gold font-medium group-hover:text-luxury-gold/90 transition-all duration-300">
+                    <TypingText 
+                      text={line.command} 
+                      speed={2} 
+                      onType={onTyping}
+                      onComplete={() => {}}
+                    />
+                  </span>
                   <span className="text-muted/60 mx-3 font-light">—</span>
                   <span className="text-muted group-hover:text-cream/70 font-light">
-                    {shouldTypeLine ? (
-                      <TypingText 
-                        text={line.desc} 
-                        speed={2} 
-                        onType={onTyping}
-                        onComplete={() => {
-                          handleItemComplete(lineId);
-                          if (i === content.length - 1) {
-                            moveToNextItem();
-                          } else {
-                            setCurrentSubIndex(prev => prev + 1);
-                          }
-                        }}
-                      />
-                    ) : line.desc}
+                    <TypingText 
+                      text={line.desc} 
+                      speed={2} 
+                      onType={onTyping}
+                      onComplete={() => {
+                        handleItemComplete(lineId);
+                        if (i === content.length - 1) {
+                          moveToNextItem();
+                        } else {
+                          setCurrentSubIndex(prev => prev + 1);
+                        }
+                      }}
+                    />
                   </span>
                 </>
-              )}
+              ) : showFullLine ? (
+                // Show the complete line without animation
+                <>
+                  <span className="text-luxury-gold font-medium group-hover:text-luxury-gold/90 transition-all duration-300">
+                    {line.command}
+                  </span>
+                  <span className="text-muted/60 mx-3 font-light">—</span>
+                  <span className="text-muted group-hover:text-cream/70 font-light">
+                    {line.desc}
+                  </span>
+                </>
+              ) : null}
             </div>
           );
         }
