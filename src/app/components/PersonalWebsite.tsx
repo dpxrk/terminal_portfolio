@@ -4,7 +4,6 @@ import { useTerminal } from '../hooks/useTerminal';
 import StatusBar from './StatusBar';
 import MetricCard from './MetricCard';
 import ActivityLog from './ActivityLog';
-import DataTable from './DataTable';
 import CommandPrompt from './CommandPrompt';
 import TerminalOutput from './TerminalOutput';
 import { HistoryEntry } from '../types';
