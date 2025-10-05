@@ -1,14 +1,17 @@
 "use client";
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useTerminal } from '../hooks/useTerminal';
-import TerminalHeader from './TerminalHeader';
+import StatusBar from './StatusBar';
+import MetricCard from './MetricCard';
+import ActivityLog from './ActivityLog';
+import DataTable from './DataTable';
 import CommandPrompt from './CommandPrompt';
 import TerminalOutput from './TerminalOutput';
 import { HistoryEntry } from '../types';
 
 const PersonalWebsite: React.FC = () => {
   const [isMounted, setIsMounted] = useState(false);
-  
+
   const {
     input,
     setInput,
@@ -17,105 +20,11 @@ const PersonalWebsite: React.FC = () => {
     handleKeyPress,
   } = useTerminal();
 
-  const [position, setPosition] = useState({ x: 50, y: 50 });
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
-  const terminalRef = useRef<HTMLDivElement>(null);
-  const [terminalDimensions, setTerminalDimensions] = useState({ width: 0, height: 0 });
-  const [windowDimensions, setWindowDimensions] = useState({ width: 0, height: 0 });
   const terminalBodyRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
     setIsMounted(true);
   }, []);
-
-  useEffect(() => {
-    if (!isMounted) return;
-    
-    const updateDimensions = () => {
-      if (terminalRef.current) {
-        setTerminalDimensions({
-          width: terminalRef.current.offsetWidth,
-          height: terminalRef.current.offsetHeight
-        });
-      }
-      
-      setWindowDimensions({
-        width: window.innerWidth,
-        height: window.innerHeight
-      });
-    };
-    
-    updateDimensions();
-    window.addEventListener('resize', updateDimensions);
-    
-    const keepInBounds = () => {
-      if (terminalRef.current) {
-        const maxX = window.innerWidth - terminalRef.current.offsetWidth;
-        const maxY = window.innerHeight - terminalRef.current.offsetHeight;
-        
-        setPosition(prev => ({
-          x: Math.min(prev.x, maxX),
-          y: Math.min(prev.y, maxY)
-        }));
-      }
-    };
-    
-    window.addEventListener('resize', keepInBounds);
-    
-    return () => {
-      window.removeEventListener('resize', updateDimensions);
-      window.removeEventListener('resize', keepInBounds);
-    };
-  }, [isMounted]);
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (!(e.target as HTMLElement).closest('.terminal-header')) return;
-    
-    e.preventDefault();
-    setIsDragging(true);
-    
-    setDragOffset({
-      x: e.clientX - position.x,
-      y: e.clientY - position.y
-    });
-  };
-
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!isDragging) return;
-    
-    const newX = e.clientX - dragOffset.x;
-    const newY = e.clientY - dragOffset.y;
-    
-    const maxX = windowDimensions.width - terminalDimensions.width;
-    const maxY = windowDimensions.height - terminalDimensions.height;
-    
-    setPosition({
-      x: Math.max(0, Math.min(newX, maxX)),
-      y: Math.max(0, Math.min(newY, maxY))
-    });
-  }, [isDragging, dragOffset, windowDimensions.width, windowDimensions.height, terminalDimensions.width, terminalDimensions.height]);
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
-
-  useEffect(() => {
-    if (!isMounted) return;
-    
-    if (isDragging) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
-    } else {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-    }
-    
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [isDragging, dragOffset, isMounted, handleMouseMove]);
 
   // Auto-scroll to bottom when new content is added
   useEffect(() => {
@@ -133,101 +42,123 @@ const PersonalWebsite: React.FC = () => {
     }
   }, [history]);
 
-  const terminalStyles = {
-    boxShadow: isDragging 
-      ? '0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(212, 175, 55, 0.1)'
-      : '0 20px 40px -15px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(212, 175, 55, 0.1)',
-    transform: isDragging ? 'scale(1.01)' : 'scale(1)',
-    transition: isDragging ? 'none' : 'transform 0.3s ease, box-shadow 0.3s ease',
-    position: 'absolute' as const,
-    left: `${position.x}px`,
-    top: `${position.y}px`,
-    zIndex: isDragging ? 20 : 10,
-    width: '85%',
-    maxWidth: '1000px'
-  };
+  // Sample data for demonstration
+  const activityItems = history.slice(-10).map((entry) => ({
+    timestamp: entry.timestamp,
+    action: entry.command || 'System initialization',
+    result: entry.error ? 'Command failed' : 'Completed',
+    status: (entry.error ? 'error' : 'success') as 'success' | 'error'
+  }));
+
+  const statsData = [
+    { label: 'UPTIME', value: '24h' },
+    { label: 'CMDS', value: history.length },
+  ];
 
   return (
-    <div className="min-h-screen bg-black text-cream relative overflow-hidden">
-      {/* Luxury gradient background */}
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-black via-charcoal to-black"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(212,175,55,0.05)_0%,transparent_50%)]"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(212,175,55,0.03)_0%,transparent_50%)]"></div>
-      </div>
-      
-      {/* Subtle luxury texture overlay */}
-      <div className="absolute inset-0 opacity-[0.02]"
-           style={{
-             backgroundImage: `repeating-linear-gradient(
-               45deg,
-               transparent,
-               transparent 35px,
-               rgba(212, 175, 55, 0.1) 35px,
-               rgba(212, 175, 55, 0.1) 70px
-             )`
-           }}
-      />
-      
+    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
       {isMounted && (
-        <div 
-          ref={terminalRef}
-          className="terminal-container animate-fade-in"
-          onMouseDown={handleMouseDown}
-          style={terminalStyles}
-        >
-          {/* Terminal Header */}
-          <div className="terminal-header cursor-move">
-            <TerminalHeader isDragging={isDragging} />
-          </div>
+        <>
+          {/* Top Status Bar */}
+          <StatusBar stats={statsData} />
 
-          {/* Terminal Body with refined glass effect */}
-          <div ref={terminalBodyRef} className="terminal-body bg-black/90 backdrop-blur-xl rounded-b-xl p-8 h-[70vh] max-h-[700px] overflow-y-auto border-x border-b border-luxury-gold/10 relative scroll-smooth">
-            {/* Subtle inner glow */}
-            <div className="absolute inset-0 rounded-b-xl bg-gradient-to-b from-luxury-gold/5 via-transparent to-transparent pointer-events-none" />
-            
-            {/* Command History */}
-            {history.map((entry: HistoryEntry, i: number) => (
-              <div key={i} className="mb-8 space-y-3 animate-fade-in" style={{ animationDelay: `${i * 0.05}s` }}>
-                {entry.command && (
-                  <div className="flex items-center space-x-3 text-sm">
-                    <span className="text-muted">{entry.timestamp}</span>
-                    <span className="text-luxury-gold/70">{entry.path}</span>
-                    <span className="text-muted">›</span>
-                    <span className="text-cream/90">{entry.command}</span>
-                  </div>
-                )}
-                <div className={`pl-4 ${entry.error ? 'text-error' : ''}`}>
-                  {entry.output && (
-                    <TerminalOutput 
-                      output={entry.output} 
-                      isLatest={i === history.length - 1}
-                      onTyping={() => {
-                        if (terminalBodyRef.current) {
-                          terminalBodyRef.current.scrollTo({
-                            top: terminalBodyRef.current.scrollHeight,
-                            behavior: 'smooth'
-                          });
-                        }
-                      }}
-                    />
-                  )}
+          {/* Three-Column Grid Layout */}
+          <div className="grid-3-col h-[calc(100vh-44px)]">
+            {/* Left Sidebar */}
+            <div className="bg-[var(--panel-bg)] border-r border-[var(--border-color)] overflow-y-auto">
+              <div className="p-4 border-b border-[var(--border-color)]">
+                <h2 className="text-uppercase-sm text-[var(--text-secondary)] mb-4">
+                  METRICS
+                </h2>
+                <div className="space-y-3">
+                  <MetricCard
+                    label="TOTAL COMMANDS"
+                    value={history.length}
+                    status="success"
+                  />
+                  <MetricCard
+                    label="CURRENT PATH"
+                    value={currentPath}
+                    subtitle="Active directory"
+                  />
+                  <MetricCard
+                    label="STATUS"
+                    value="ONLINE"
+                    status="success"
+                  />
                 </div>
               </div>
-            ))}
 
-            {/* Current Input */}
-            <CommandPrompt
-              input={input}
-              currentPath={currentPath}
-              onInputChange={setInput}
-              onKeyPress={handleKeyPress}
-            />
-            
-            {/* Scroll anchor */}
-            <div className="h-4" />
+              <div className="p-4">
+                <h3 className="text-uppercase-sm text-[var(--text-secondary)] mb-3">
+                  QUICK ACTIONS
+                </h3>
+                <div className="space-y-2">
+                  <button className="btn-minimal w-full text-left">HELP</button>
+                  <button className="btn-minimal w-full text-left">ABOUT</button>
+                  <button className="btn-minimal w-full text-left">CLEAR</button>
+                </div>
+              </div>
+            </div>
+
+            {/* Main Content Area - Terminal */}
+            <div className="bg-[var(--background)] overflow-hidden flex flex-col">
+              <div className="p-4 border-b border-[var(--border-color)]">
+                <h2 className="text-uppercase-sm text-[var(--text-secondary)]">
+                  TERMINAL
+                </h2>
+              </div>
+
+              <div
+                ref={terminalBodyRef}
+                className="flex-1 overflow-y-auto p-6 font-mono text-sm no-scrollbar"
+              >
+                {/* Command History */}
+                {history.map((entry: HistoryEntry, i: number) => (
+                  <div key={i} className="mb-6">
+                    {entry.command && (
+                      <div className="flex items-center gap-3 text-xs mb-2">
+                        <span className="text-[var(--text-muted)]">{entry.timestamp}</span>
+                        <span className="text-[var(--accent)]">{entry.path}</span>
+                        <span className="text-[var(--text-muted)]">›</span>
+                        <span className="text-[var(--text-primary)]">{entry.command}</span>
+                      </div>
+                    )}
+                    <div className={`pl-4 ${entry.error ? 'text-[var(--error)]' : ''}`}>
+                      {entry.output && (
+                        <TerminalOutput
+                          output={entry.output}
+                          isLatest={i === history.length - 1}
+                          onTyping={() => {
+                            if (terminalBodyRef.current) {
+                              terminalBodyRef.current.scrollTo({
+                                top: terminalBodyRef.current.scrollHeight,
+                                behavior: 'smooth'
+                              });
+                            }
+                          }}
+                        />
+                      )}
+                    </div>
+                  </div>
+                ))}
+
+                {/* Current Input */}
+                <CommandPrompt
+                  input={input}
+                  currentPath={currentPath}
+                  onInputChange={setInput}
+                  onKeyPress={handleKeyPress}
+                />
+              </div>
+            </div>
+
+            {/* Right Sidebar - Activity Log */}
+            <div className="bg-[var(--panel-bg)] border-l border-[var(--border-color)] hidden lg:block overflow-hidden">
+              <ActivityLog items={activityItems} maxHeight="calc(100vh - 44px)" />
+            </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );

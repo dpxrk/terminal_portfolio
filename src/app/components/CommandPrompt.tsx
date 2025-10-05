@@ -77,14 +77,14 @@ const CommandPrompt: React.FC<CommandPromptProps> = ({
   }, []);
 
   return (
-    <div className="flex items-center space-x-3 text-sm group animate-fade-in">
-      <span className="text-muted tabular-nums">
+    <div className="flex items-center gap-3 text-xs font-mono group">
+      <span className="text-[var(--text-muted)] tabular-nums">
         {currentTime}
       </span>
-      <span className="text-luxury-gold/70 font-light">
+      <span className="text-[var(--accent)]">
         {currentPath}
       </span>
-      <span className="text-muted">
+      <span className="text-[var(--text-muted)]">
         ›
       </span>
       <div className="flex-1 relative">
@@ -97,7 +97,7 @@ const CommandPrompt: React.FC<CommandPromptProps> = ({
             value={input}
             onChange={(e) => onInputChange(e.target.value)}
             onKeyPress={onKeyPress}
-            className="w-full bg-transparent outline-none text-cream/90 focus:text-cream transition-colors duration-300 pr-4 font-light placeholder-muted/50"
+            className="w-full bg-transparent outline-none text-[var(--text-primary)] pr-4 placeholder-[var(--text-muted)] font-mono instant-transition"
             autoFocus
             spellCheck={false}
             autoComplete="off"
@@ -113,13 +113,13 @@ const CommandPrompt: React.FC<CommandPromptProps> = ({
             style={{ WebkitAppearance: 'none' }}
           />
         </form>
-        {/* Elegant cursor */}
-        <span 
-          className={`absolute top-0 bottom-0 w-[2px] bg-luxury-gold transition-opacity duration-200 ${
-            showCursor && input.length === 0 ? 'opacity-60' : 'opacity-0'
+        {/* Cursor */}
+        <span
+          className={`absolute top-0 bottom-0 w-[2px] bg-[var(--accent)] ${
+            showCursor && input.length === 0 ? 'opacity-100' : 'opacity-0'
           }`}
-          style={{ 
-            left: `${input.length * 0.55}rem`
+          style={{
+            left: `${input.length * 0.6}rem`
           }}
         />
       </div>
